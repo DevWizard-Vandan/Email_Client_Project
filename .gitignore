@@ -1,0 +1,48 @@
+# ---- Java build files ----
+*.class
+*.jar
+*.war
+*.ear
+
+# ---- IDE specific ----
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
+
+# VS Code
+.vscode/
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
+# ---- Build tools ----
+# Maven
+target/
+
+# Gradle
+.gradle/
+build/
+
+# Logs
+*.log
+
+# ---- OS specific ----
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+e
