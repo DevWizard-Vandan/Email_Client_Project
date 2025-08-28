@@ -28,20 +28,8 @@ nbdist/
 nbactions.xml
 nb-configuration.xml
 
-# ---- Build tools ----
-# Maven
-target/
-
-# Gradle
-.gradle/
-build/
-
 # Logs
 *.log
-
-# ---- OS specific ----
-# macOS
-.DS_Store
 
 # Windows
 Thumbs.db
