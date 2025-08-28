@@ -6,11 +6,11 @@ USE email_client;
 
 -- Insert Sample Users
 INSERT IGNORE INTO User (Name, Email, Password) VALUES
-('john_doe', 'john@example.com', 'password123'),
-('alice_smith', 'alice@example.com', 'alice2024'),
-('bob_wilson', 'bob@example.com', 'bobsecure'),
-('sarah_jones', 'sarah@example.com', 'sarah456'),
-('mike_brown', 'mike@example.com', 'mike789');
+('Vandan Sharma', 'vandan@gmail.com', 'vandan2006'),
+('Shashwat Upadhyay', 'shashwat@gmail.com', 'shashwat2025'),
+('Aksh Upase', 'aksh@gmail.com', 'aksh25'),
+('Prathamesh Upase', 'prathamesh@gmail.com', 'prathamesh06'),
+('Om Tundurwar', 'om@gmail.com', 'om123');
 
 -- Insert Sample Emails
 INSERT IGNORE INTO Email (EmailID, Subject, Body, Timestamp) VALUES
