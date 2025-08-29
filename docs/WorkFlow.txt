@@ -1,0 +1,269 @@
+===============================================================================
+                          EMAIL CLIENT PROJECT WORKFLOW
+===============================================================================
+
+PROJECT OVERVIEW:
+- Console-based Email Client Application
+- Technologies: Java (OOP) + MySQL Database (DBMS)
+- Team Size: 5 Members
+- Development Duration: 4 Weeks
+- Total Features: 10+ Core Functionalities
+
+===============================================================================
+                            DETAILED WORKFLOW
+===============================================================================
+
+1. USER SIGN UP / LOGIN WORKFLOW
+   ================================
+   
+   STEP 1: User Interface (Java OOP)
+   - User selects "Sign Up" or "Login" from main menu
+   - System prompts for username, email (signup only), and password
+   - Input validation performed on client side
+   - User object created with entered details
+   
+   STEP 2: Database Operations (MySQL DBMS)
+   FOR SIGNUP:
+   - Execute: INSERT INTO User (Name, Email, Password) VALUES (?, ?, ?)
+   - Check for duplicate username (UNIQUE constraint)
+   - Return success/failure status
+   
+   FOR LOGIN:
+   - Execute: SELECT * FROM User WHERE Name=? AND Password=?
+   - Validate credentials against database
+   - Create User session object if successful
+   - Return User object or null
+
+   STEP 3: Session Management
+   - Store current user object in memory
+   - Display welcome message
+   - Redirect to main application menu
+
+===============================================================================
+
+2. COMPOSING & SENDING EMAIL WORKFLOW
+   ===================================
+   
+   STEP 1: Email Composition (Java OOP)
+   - User selects "Compose Email" from main menu
+   - System prompts for:
+     * Recipient username
+     * Email subject
+     * Email body content
+   - Input validation (non-empty fields, valid recipient)
+   - Email object created with timestamp
+   
+   STEP 2: Recipient Validation (MySQL DBMS)
+   - Execute: SELECT UserID FROM User WHERE Name=?
+   - Verify recipient exists in system
+   - Get recipient UserID for relationship mapping
+   
+   STEP 3: Database Transaction (MySQL DBMS)
+   BEGIN TRANSACTION:
+   a) Insert Email Record:
+      - INSERT INTO Email (Subject, Body, Timestamp) VALUES (?, ?, ?)
+      - Get generated EmailID using RETURN_GENERATED_KEYS
+   
+   b) Create Sender Relationship:
+      - INSERT INTO EmailUser (EmailID, UserID, Role) VALUES (?, ?, 'Sender')
+   
+   c) Create Receiver Relationship:
+      - INSERT INTO EmailUser (EmailID, UserID, Role) VALUES (?, ?, 'Receiver')
+   
+   COMMIT TRANSACTION (or ROLLBACK on failure)
+   
+   STEP 4: Confirmation
+   - Display success/failure message
+   - Return to main menu
+
+===============================================================================
+
+3. VIEWING INBOX WORKFLOW
+   ========================
+   
+   STEP 1: User Request (Java OOP)
+   - User selects "View Inbox" from main menu
+   - System retrieves current user's UserID from session
+   
+   STEP 2: Database Query (MySQL DBMS)
+   - Execute Complex JOIN Query:
+     SELECT e.EmailID, e.Subject, e.Body, e.Timestamp,
+            sender.Name as SenderName,
+            receiver.Name as ReceiverName
+     FROM Email e
+     JOIN EmailUser eu ON e.EmailID = eu.EmailID
+     LEFT JOIN EmailUser senderEU ON e.EmailID = senderEU.EmailID AND senderEU.Role = 'Sender'
+     LEFT JOIN User sender ON senderEU.UserID = sender.UserID
+     LEFT JOIN EmailUser receiverEU ON e.EmailID = receiverEU.EmailID AND receiverEU.Role = 'Receiver'
+     LEFT JOIN User receiver ON receiverEU.UserID = receiver.UserID
+     WHERE eu.UserID = ? AND eu.Role = 'Receiver'
+     ORDER BY e.Timestamp DESC
+   
+   STEP 3: Data Processing (Java OOP)
+   - Create Email objects from ResultSet
+   - Populate sender and receiver information
+   - Sort by timestamp (most recent first)
+   
+   STEP 4: Display (Java OOP)
+   - Format and display each email with:
+     * From: Sender Name
+     * Subject: Email Subject
+     * Body: Email Content
+     * Sent: Timestamp
+   - Handle empty inbox case
+   - Return to main menu
+
+===============================================================================
+
+4. VIEWING SENT ITEMS WORKFLOW
+   =============================
+   
+   STEP 1: User Request (Java OOP)
+   - User selects "View Sent Items" from main menu
+   - System retrieves current user's UserID from session
+   
+   STEP 2: Database Query (MySQL DBMS)
+   - Execute Similar JOIN Query as Inbox:
+     (Same query structure but with WHERE eu.Role = 'Sender')
+     WHERE eu.UserID = ? AND eu.Role = 'Sender'
+     ORDER BY e.Timestamp DESC
+   
+   STEP 3: Data Processing & Display (Java OOP)
+   - Create Email objects from ResultSet
+   - Display sent emails with recipient information
+   - Show "To: Recipient Name" instead of "From: Sender Name"
+   - Handle empty sent items case
+   - Return to main menu
+
+===============================================================================
+
+5. LOGGING OUT WORKFLOW
+   ======================
+   
+   STEP 1: User Request (Java OOP)
+   - User selects "Logout" from main menu
+   - System confirms logout action
+   
+   STEP 2: Session Cleanup (Java OOP)
+   - Clear current User object from memory
+   - Reset session variables
+   - Clear any cached data
+   
+   STEP 3: Database Operations (MySQL DBMS)
+   - No database changes required
+   - All data already persisted in database
+   - Connections properly closed
+   
+   STEP 4: Return to Login Screen
+   - Display "Logged out successfully" message
+   - Redirect to login/signup menu
+   - Application continues running
+
+===============================================================================
+                              TECHNICAL WORKFLOW
+===============================================================================
+
+DATABASE CONNECTION WORKFLOW:
+1. Load MySQL JDBC driver: com.mysql.cj.jdbc.Driver
+2. Establish connection: jdbc:mysql://localhost:3306/email_client
+3. Create database if not exists: CREATE DATABASE IF NOT EXISTS email_client
+4. Create tables using schema.sql if not exists
+5. Execute prepared statements for all queries
+6. Handle SQLException with appropriate error messages
+7. Close connections in finally blocks or try-with-resources
+
+OBJECT-ORIENTED DESIGN WORKFLOW:
+1. User.java - Encapsulates user data and methods
+2. Email.java - Encapsulates email data and display methods
+3. UserService.java - Handles user authentication business logic
+4. EmailService.java - Handles email operations business logic
+5. DatabaseHelper.java - Manages all database interactions
+6. Main.java - Controls application flow and user interface
+
+ERROR HANDLING WORKFLOW:
+1. Input validation at UI level
+2. Business logic validation at service level
+3. Database constraint validation at DBMS level
+4. Exception handling with try-catch blocks
+5. Transaction rollback on database errors
+6. User-friendly error messages
+7. Logging of technical errors for debugging
+
+TESTING WORKFLOW:
+1. Unit testing of individual classes
+2. Integration testing of database operations
+3. End-to-end testing of complete workflows
+4. Edge case testing (empty inputs, non-existent users)
+5. Performance testing with sample data
+6. User acceptance testing with team members
+
+===============================================================================
+                            TEAM WORKFLOW BREAKDOWN
+===============================================================================
+
+PROJECT LEADER (40% - Most Critical):
+- System architecture design and technical decisions
+- Main.java development (user interface and application flow)
+- DatabaseHelper.java implementation (database connectivity and operations)
+- Team coordination and project integration
+- Quality assurance and comprehensive testing
+- Technical problem-solving and bug resolution
+
+DATABASE ARCHITECT (20%):
+- Database schema design and normalization
+- MySQL table creation with proper constraints
+- Sample data creation for testing
+- Database performance optimization
+- Index creation and query optimization
+
+BACKEND DEVELOPER (15%):
+- EmailService.java implementation
+- Complex SQL queries with multiple table joins
+- Email sending and receiving business logic
+- Database transaction management
+
+AUTHENTICATION DEVELOPER (15%):
+- UserService.java implementation
+- User.java and Email.java entity classes
+- Input validation and security features
+- User session management
+- Password validation logic
+
+DOCUMENTATION SPECIALIST (10%):
+- README.md creation and maintenance
+- IntelliJ IDEA setup guide
+- Code documentation and comments
+- Troubleshooting guide creation
+- Installation and deployment documentation
+
+===============================================================================
+                              SUCCESS METRICS
+===============================================================================
+
+FUNCTIONAL REQUIREMENTS MET:
+✓ User registration and authentication
+✓ Email composition and sending
+✓ Inbox viewing with sender information
+✓ Sent items viewing with recipient information
+✓ Secure logout functionality
+✓ Data persistence across sessions
+✓ Input validation and error handling
+
+TECHNICAL REQUIREMENTS MET:
+✓ Object-Oriented Programming principles
+✓ Database normalization and relationships
+✓ JDBC connectivity and prepared statements
+✓ Transaction management and rollback
+✓ Exception handling and logging
+✓ Code organization and documentation
+
+PERFORMANCE REQUIREMENTS MET:
+✓ Fast database queries with proper indexing
+✓ Efficient memory management
+✓ Responsive user interface
+✓ Scalable database design
+✓ Optimized connection handling
+
+===============================================================================
+                                END OF WORKFLOW
+===============================================================================
