@@ -70,7 +70,7 @@ INSERT IGNORE INTO Attachments (EmailID, FilePath) VALUES
 INSERT IGNORE INTO Folder (Name, UserID) VALUES
 ('Inbox', 1),
 ('Sent', 1),
-('Drafts', 2),
+('Drafts', 2)'
 ('Inbox', 2),
 ('Inbox', 3),
 ('Inbox', 4),
