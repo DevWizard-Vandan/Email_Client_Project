@@ -60,3 +60,26 @@ INSERT IGNORE INTO EmailUser (EmailID, UserID, Role) VALUES
 INSERT IGNORE INTO EmailUser (EmailID, UserID, Role) VALUES
 (7, 2, 'Sender'),    -- alice_smith is sender
 (7, 3, 'Receiver');  -- bob_wilson is receiver
+
+-- Insert Sample Attachments
+INSERT IGNORE INTO Attachments (EmailID, FilePath) VALUES
+(5, '/attachments/report.pdf'),  -- for "Report Submission"
+(6, '/attachments/thankyou.png'); -- for "Thank You!"
+
+-- Insert Sample Folders
+INSERT IGNORE INTO Folder (Name, UserID) VALUES
+('Inbox', 1),
+('Sent', 1),
+('Drafts', 2),
+('Inbox', 2),
+('Inbox', 3),
+('Inbox', 4),
+('Inbox', 5);
+
+-- Insert Sample Website SignUps
+INSERT IGNORE INTO WebsiteSignUp (Name, DomainName, UserID) VALUES
+('Gmail Signup', 'gmail.com', 1),
+('Gmail Signup', 'gmail.com', 2),
+('Gmail Signup', 'gmail.com', 3),
+('Yahoo Signup', 'yahoo.com', 4),
+('Outlook Signup', 'outlook.com', 5);
