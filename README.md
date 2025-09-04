@@ -14,45 +14,79 @@ This email client allows users to:
 
 ## Team Members and Contributions
 
-### **Project Leader & Lead Developer: Vandan Sharma** 🏆
-**Primary Responsibilities:**
-- **System Architecture Design**: Designed complete project architecture and workflow specifications
-- **Core Application Logic**: Developed `Main.java` with complete user interface and menu system
-- **Database Integration**: Implemented `DatabaseHelper.java` with MySQL connectivity and transaction management
-- **Project Management**: Coordinated team activities, code integration, and ensured project completion
-- **Testing & Quality Assurance**: Conducted comprehensive testing and debugging of all components
-- **Technical Leadership**: Made critical technical decisions and resolved complex integration issues
+### **Project Leader & Lead Developer: Vandan Sharma**
 
-### **Database Architect: Shashwat Upadhyay**
-**Responsibilities:**
-- **Database Schema Design**: Created complete `schema.sql` with normalized tables and relationships
-- **Sample Data Creation**: Developed comprehensive `sample_data.sql` with realistic test scenarios
-- **MySQL Optimization**: Implemented indexes, constraints, and performance optimizations
-- **Data Integrity**: Designed foreign key relationships and cascade operations
-- **Database Documentation**: Created ER diagrams and database documentation
+**Java Contributions**
+- Designed the entire system architecture and defined core module interactions.
+- Developed `Main.java` to manage user interface and application flow.
+- Created `DatabaseHelper.java` for MySQL connectivity, query execution, and transaction control.
+- Integrated Java classes (`User`, `Email`, services) with clean separation of concerns.
+- Led testing and debugging efforts across all modules, ensuring quality and stability.
+
+**DBMS Contributions**
+- Managed full database integration with Java using JDBC.
+- Implemented transactional support for multi-step operations (e.g., sending an email).
+- Handled SQL exception management and error-handling mechanisms.
+- Coordinated entity-class mapping between Java objects and relational tables.
+
+---
+
+### **Database Architect & Senior Developer: Shashwat Upadhyay**
+
+**Java Contributions**
+- Supported development of SQL-related logic within Java service classes.
+- Aided in integration of backend queries and data access within the Java application.
+
+**DBMS Contributions**
+- Designed a fully normalized schema (`User`, `Email`, `EmailUser`) with foreign key relationships.
+- Implemented `schema.sql` and `sample_data.sql` for testing and development.
+- Defined constraints, indexes, and ON DELETE CASCADE rules for data integrity.
+- Created a complete ER diagram and documented database relationships.
+- Optimized database structure and queries for performance.
+
+---
 
 ### **Backend Services Developer: Aksh Upase**
-**Responsibilities:**
-- **Email Service Implementation**: Developed `EmailService.java` with inbox/sent items functionality
-- **Complex SQL Queries**: Implemented multi-table joins and advanced database operations
-- **Business Logic**: Created email sending, receiving, and display mechanisms
-- **Performance Optimization**: Optimized database queries for better performance
+
+**Java Contributions**
+- Developed `EmailService.java` for sending, receiving, and displaying emails.
+- Implemented business logic for inbox, sent items, and message threading.
+- Built reusable backend methods for accessing and managing user-email data.
+
+**DBMS Contributions**
+- Wrote complex SQL queries involving multi-table joins and filters.
+- Implemented atomic transactions across `Email` and `EmailUser` tables.
+- Tuned query performance for efficient data retrieval under load.
+
+---
 
 ### **Authentication & Security Developer: Prathamesh Upase**
-**Responsibilities:**
-- **User Authentication System**: Implemented complete `UserService.java` with login/signup logic
-- **Entity Development**: Created `User.java` and `Email.java` classes with proper OOP design
-- **Input Validation**: Developed comprehensive validation for all user inputs
-- **Security Features**: Implemented password validation and user session management
-- **Error Handling**: Created user-friendly error messages and exception handling
+
+**Java Contributions**
+- Developed `UserService.java` for login, registration, and session handling.
+- Created Java entity classes (`User.java`, `Email.java`) using object-oriented principles.
+- Implemented input validation and exception handling for user-related operations.
+
+**DBMS Contributions**
+- Defined constraints and rules to validate user data at the database level.
+- Designed secure SQL queries using prepared statements to prevent injection attacks.
+- Implemented rollback mechanisms for failed authentication or registration operations.
+
+---
 
 ### **Documentation & Deployment Specialist: Om Tundurwar**
-**Responsibilities:**
-- **Technical Documentation**: Created detailed README and setup guides
-- **IntelliJ Setup Guide**: Developed comprehensive IDE configuration instructions
-- **Installation Documentation**: Documented MySQL setup and JAR file configuration
-- **Troubleshooting Guide**: Compiled common issues, solutions, and best practices
-- **Code Documentation**: Added inline comments and JavaDoc documentation throughout the codebase
+
+**Java Contributions**
+- Added JavaDoc and inline comments throughout the codebase.
+- Documented IDE setup and code structure for development continuity.
+
+**DBMS Contributions**
+- Maintained and documented `schema.sql` and `sample_data.sql` usage.
+- Wrote setup instructions for MySQL installation and configuration.
+- Created troubleshooting guides for common database issues.
+- Handled versioning and migration documentation for the database schema.
+
+---
 
 ## Architecture
 
