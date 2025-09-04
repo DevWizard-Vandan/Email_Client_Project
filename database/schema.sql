@@ -39,3 +39,32 @@ CREATE TABLE IF NOT EXISTS EmailUser (
 CREATE INDEX IF NOT EXISTS idx_emailuser_userid_role ON EmailUser(UserID, Role);
 CREATE INDEX IF NOT EXISTS idx_email_timestamp ON Email(Timestamp);
 CREATE INDEX IF NOT EXISTS idx_user_name ON User(Name);
+
+-- Attachments Table
+-- Stores file attachments linked to emails
+CREATE TABLE IF NOT EXISTS Attachments (
+    AttachmentID INT AUTO_INCREMENT PRIMARY KEY,
+    EmailID INT NOT NULL,
+    FilePath VARCHAR(255) NOT NULL,
+    FOREIGN KEY (EmailID) REFERENCES Email(EmailID) ON DELETE CASCADE
+);
+
+-- Folder Table
+-- Stores folders (Inbox, Sent, Drafts, etc.) for each user
+CREATE TABLE IF NOT EXISTS Folder (
+    FolderID INT AUTO_INCREMENT PRIMARY KEY,
+    UserID INT NOT NULL,
+    Name VARCHAR(100) NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
+);
+
+-- WebsiteSignUp Table
+-- Stores the websites/domains where users signed up
+CREATE TABLE IF NOT EXISTS WebsiteSignUp (
+    SignUpID INT AUTO_INCREMENT PRIMARY KEY,
+    UserID INT NOT NULL,
+    Name VARCHAR(100) NOT NULL,
+    DomainName VARCHAR(100) NOT NULL,
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
+);
