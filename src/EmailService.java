@@ -58,7 +58,7 @@ public class EmailService {
     }
 
     /**
-     * View inbox for a specific user
+     * View inbox for a specific user (Console version)
      * @param userId User ID to get inbox for
      */
     public void viewInbox(int userId) {
@@ -76,7 +76,7 @@ public class EmailService {
     }
 
     /**
-     * View sent items for a specific user
+     * View sent items for a specific user (Console version)
      * @param userId User ID to get sent items for
      */
     public void viewSentItems(int userId) {
@@ -94,12 +94,12 @@ public class EmailService {
     }
 
     /**
-     * Get emails by user role (Sender/Receiver)
+     * Get emails by user role (Sender/Receiver) - GUI Version
      * @param userId User ID
      * @param role Role (Sender/Receiver)
-     * @return List of emails
+     * @return List of emails with complete information
      */
-    private List<Email> getEmailsByRole(int userId, String role) {
+    public List<Email> getEmailsByRole(int userId, String role) {
         List<Email> emails = new ArrayList<>();
 
         String sql = """
@@ -145,6 +145,24 @@ public class EmailService {
     }
 
     /**
+     * Get inbox emails for GUI
+     * @param userId User ID
+     * @return List of received emails
+     */
+    public List<Email> getInboxEmails(int userId) {
+        return getEmailsByRole(userId, "Receiver");
+    }
+
+    /**
+     * Get sent emails for GUI
+     * @param userId User ID
+     * @return List of sent emails
+     */
+    public List<Email> getSentEmails(int userId) {
+        return getEmailsByRole(userId, "Sender");
+    }
+
+    /**
      * Get total email count for a user (inbox + sent)
      * @param userId User ID
      * @return Total email count
@@ -168,6 +186,64 @@ public class EmailService {
 
         } catch (SQLException e) {
             System.err.println("Error getting email count: " + e.getMessage());
+        }
+
+        return 0;
+    }
+
+    /**
+     * Get inbox count for a user
+     * @param userId User ID
+     * @return Inbox email count
+     */
+    public int getInboxCount(int userId) {
+        String sql = """
+            SELECT COUNT(*) as count
+            FROM EmailUser
+            WHERE UserID = ? AND Role = 'Receiver'
+        """;
+
+        try (Connection conn = DatabaseHelper.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error getting inbox count: " + e.getMessage());
+        }
+
+        return 0;
+    }
+
+    /**
+     * Get sent items count for a user
+     * @param userId User ID
+     * @return Sent email count
+     */
+    public int getSentCount(int userId) {
+        String sql = """
+            SELECT COUNT(*) as count
+            FROM EmailUser
+            WHERE UserID = ? AND Role = 'Sender'
+        """;
+
+        try (Connection conn = DatabaseHelper.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error getting sent count: " + e.getMessage());
         }
 
         return 0;
