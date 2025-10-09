@@ -116,7 +116,7 @@ public class EmailService {
             ORDER BY e.Timestamp DESC
         """;
 
-        try (Connection conn = DatabaseHelper.getConnection();
+        try (Connection conn = DatabaseHelper.getConnection();   //AU
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, userId);
