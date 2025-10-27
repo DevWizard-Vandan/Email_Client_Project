@@ -1,41 +1,175 @@
--- Email Client Database Schema
--- MySQL Database
+-- Enhanced Email Client Database Schema
+-- MySQL Database - Professional Implementation
 
 -- Create Database
 CREATE DATABASE IF NOT EXISTS email_client;
 USE email_client;
 
--- User Table
--- Stores user account information
+-- User Table - Core user information
 CREATE TABLE IF NOT EXISTS User (
                                     UserID INT AUTO_INCREMENT PRIMARY KEY,
                                     Name VARCHAR(50) UNIQUE NOT NULL,
-    Email VARCHAR(100) NOT NULL,
-    Password VARCHAR(100) NOT NULL
+    Password VARCHAR(255) NOT NULL,
+    PersonalDetails TEXT,
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    LastLogin DATETIME,
+    IsActive BOOLEAN DEFAULT TRUE,
+    ProfilePicture VARCHAR(255),
+
+    INDEX idx_user_name (Name),
+    INDEX idx_user_active (IsActive)
     );
 
--- Email Table
--- Stores email content and metadata
+-- WebsiteSignUp Table - Track signup details
+CREATE TABLE IF NOT EXISTS WebsiteSignUp (
+                                             SignUpID INT AUTO_INCREMENT PRIMARY KEY,
+                                             UserID INT NOT NULL,
+                                             Name VARCHAR(100) NOT NULL,
+    DomainName VARCHAR(100) NOT NULL,
+    SignUpDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE,
+    INDEX idx_signup_user (UserID),
+    INDEX idx_signup_date (SignUpDate)
+    );
+
+-- Folder Table - Email organization
+CREATE TABLE IF NOT EXISTS Folder (
+                                      FolderID INT AUTO_INCREMENT PRIMARY KEY,
+                                      UserID INT NOT NULL,
+                                      Name VARCHAR(100) NOT NULL,
+    ParentFolderID INT NULL,
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Color VARCHAR(7) DEFAULT '#3498db',
+    IsSystem BOOLEAN DEFAULT FALSE,
+
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (ParentFolderID) REFERENCES Folder(FolderID) ON DELETE SET NULL,
+    INDEX idx_folder_user (UserID),
+    INDEX idx_folder_parent (ParentFolderID)
+    );
+
+-- Email Table - Enhanced with more fields
 CREATE TABLE IF NOT EXISTS Email (
                                      EmailID INT AUTO_INCREMENT PRIMARY KEY,
                                      Subject VARCHAR(255) NOT NULL,
-    Body TEXT NOT NULL,
-    Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    Body LONGTEXT NOT NULL,
+    Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Priority ENUM('Low', 'Normal', 'High') DEFAULT 'Normal',
+    IsHTML BOOLEAN DEFAULT FALSE,
+    MessageID VARCHAR(255) UNIQUE,
+    InReplyToID INT NULL,
+    Size INT DEFAULT 0,
+
+    FOREIGN KEY (InReplyToID) REFERENCES Email(EmailID) ON DELETE SET NULL,
+    INDEX idx_email_timestamp (Timestamp),
+    INDEX idx_email_priority (Priority),
+    INDEX idx_email_reply (InReplyToID)
     );
 
--- EmailUser Junction Table
--- Links emails to users with roles (Sender/Receiver)
--- This table implements the many-to-many relationship between emails and users
+-- EmailUser Junction Table - Enhanced with folder support
 CREATE TABLE IF NOT EXISTS EmailUser (
                                          EmailID INT,
                                          UserID INT,
-                                         Role ENUM('Sender', 'Receiver') NOT NULL,
+                                         Role ENUM('Sender', 'Receiver', 'CC', 'BCC') NOT NULL,
+    FolderID INT NULL,
+    IsRead BOOLEAN DEFAULT FALSE,
+    IsStarred BOOLEAN DEFAULT FALSE,
+    IsDeleted BOOLEAN DEFAULT FALSE,
+    ReadAt DATETIME NULL,
+
     PRIMARY KEY (EmailID, UserID, Role),
     FOREIGN KEY (EmailID) REFERENCES Email(EmailID) ON DELETE CASCADE,
-    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (FolderID) REFERENCES Folder(FolderID) ON DELETE SET NULL,
+    INDEX idx_emailuser_folder (FolderID),
+    INDEX idx_emailuser_read (IsRead),
+    INDEX idx_emailuser_starred (IsStarred),
+    INDEX idx_emailuser_deleted (IsDeleted)
     );
 
--- Indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_emailuser_userid_role ON EmailUser(UserID, Role);
-CREATE INDEX IF NOT EXISTS idx_email_timestamp ON Email(Timestamp);
-CREATE INDEX IF NOT EXISTS idx_user_name ON User(Name);
+-- Attachment Table - File attachment support
+CREATE TABLE IF NOT EXISTS Attachment (
+                                          ID INT AUTO_INCREMENT PRIMARY KEY,
+                                          EmailID INT NOT NULL,
+                                          FileName VARCHAR(255) NOT NULL,
+    FileSize BIGINT NOT NULL,
+    MimeType VARCHAR(100) NOT NULL,
+    FilePath VARCHAR(500) NOT NULL,
+    UploadedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (EmailID) REFERENCES Email(EmailID) ON DELETE CASCADE,
+    INDEX idx_attachment_email (EmailID),
+    INDEX idx_attachment_size (FileSize)
+    );
+
+-- Email Labels/Tags Table - For advanced organization
+CREATE TABLE IF NOT EXISTS EmailLabel (
+                                          LabelID INT AUTO_INCREMENT PRIMARY KEY,
+                                          UserID INT NOT NULL,
+                                          Name VARCHAR(50) NOT NULL,
+    Color VARCHAR(7) DEFAULT '#95a5a6',
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_label (UserID, Name)
+    );
+
+-- Junction table for email-label relationships
+CREATE TABLE IF NOT EXISTS EmailLabelMapping (
+                                                 EmailID INT,
+                                                 LabelID INT,
+
+                                                 PRIMARY KEY (EmailID, LabelID),
+    FOREIGN KEY (EmailID) REFERENCES Email(EmailID) ON DELETE CASCADE,
+    FOREIGN KEY (LabelID) REFERENCES EmailLabel(LabelID) ON DELETE CASCADE
+    );
+
+-- Insert Default System Folders for each user (trigger)
+DELIMITER //
+CREATE TRIGGER CreateDefaultFolders
+    AFTER INSERT ON User
+    FOR EACH ROW
+BEGIN
+    INSERT INTO Folder (UserID, Name, IsSystem) VALUES
+                                                    (NEW.UserID, 'Inbox', TRUE),
+                                                    (NEW.UserID, 'Sent', TRUE),
+                                                    (NEW.UserID, 'Drafts', TRUE),
+                                                    (NEW.UserID, 'Trash', TRUE),
+                                                    (NEW.UserID, 'Spam', TRUE);
+END//
+DELIMITER ;
+
+-- Views for easier querying
+CREATE OR REPLACE VIEW EmailWithDetails AS
+SELECT
+    e.EmailID,
+    e.Subject,
+    e.Body,
+    e.Timestamp,
+    e.Priority,
+    e.IsHTML,
+    sender.Name AS SenderName,
+    receiver.Name AS ReceiverName,
+    eu_receiver.IsRead,
+    eu_receiver.IsStarred,
+    eu_receiver.FolderID,
+    f.Name AS FolderName,
+    GROUP_CONCAT(a.FileName) AS Attachments,
+    COUNT(a.ID) AS AttachmentCount
+FROM Email e
+         LEFT JOIN EmailUser eu_sender ON e.EmailID = eu_sender.EmailID AND eu_sender.Role = 'Sender'
+         LEFT JOIN User sender ON eu_sender.UserID = sender.UserID
+         LEFT JOIN EmailUser eu_receiver ON e.EmailID = eu_receiver.EmailID AND eu_receiver.Role = 'Receiver'
+         LEFT JOIN User receiver ON eu_receiver.UserID = receiver.UserID
+         LEFT JOIN Folder f ON eu_receiver.FolderID = f.FolderID
+         LEFT JOIN Attachment a ON e.EmailID = a.EmailID
+GROUP BY e.EmailID, eu_receiver.UserID;
+
+-- Performance optimization indexes
+CREATE INDEX idx_email_composite ON Email(Timestamp, Priority);
+CREATE INDEX idx_emailuser_composite ON EmailUser(UserID, Role, IsDeleted, IsRead);
+CREATE INDEX idx_folder_system ON Folder(UserID, IsSystem);
+
+-- Full-text search index for email content
+ALTER TABLE Email ADD FULLTEXT(Subject, Body);
