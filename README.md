@@ -662,3 +662,331 @@ INSERT INTO WebsiteSignUp (UserID, Name, DomainName) VALUES
 -- Test users: john_doe, alice_smith, bob_wilson, sarah_jones, mike_brown
 -- All passwords: pass123, pass456, pass789, pass321, pass654
 -- ============================================
+
+
+
+
+
+
+
+
+# Professional Email Client Application
+
+A comprehensive, enterprise-grade email management system built with **JavaFX** and **MySQL**, demonstrating advanced software engineering principles and database management.
+
+---
+
+## 📋 Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Architecture](#architecture)
+- [Team Contributions](#team-contributions)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Screenshots](#screenshots)
+- [Database Schema](#database-schema)
+- [Troubleshooting](#troubleshooting)
+- [Future Enhancements](#future-enhancements)
+- [License](#license)
+
+---
+
+## 🎯 Overview
+
+The **Professional Email Client** is a desktop application that provides a complete email management solution with modern UI/UX design. Built as an academic project, it demonstrates mastery of:
+- Object-Oriented Programming (Java)
+- Database Management (MySQL)
+- GUI Development (JavaFX)
+- Three-tier Architecture
+- Software Engineering Best Practices
+
+---
+
+## ✨ Features
+
+### 🔐 User Management
+- ✅ User registration with validation
+- ✅ Secure login authentication
+- ✅ Session management
+- ✅ Profile management
+
+### 📧 Email Operations
+- ✅ Compose and send emails
+- ✅ Receive and view emails
+- ✅ Email priority levels (Low, Normal, High)
+- ✅ Mark as read/unread
+- ✅ Star/unstar important emails
+- ✅ Soft delete functionality
+- ✅ Full-text search
+
+### 📁 Folder Organization
+- ✅ System folders (Inbox, Sent, Drafts, Trash, Spam)
+- ✅ Custom folder creation
+- ✅ Folder rename and delete
+- ✅ Email count per folder
+- ✅ Unread count display
+
+### 📎 Attachments
+- ✅ Multiple file attachments per email
+- ✅ File type detection
+- ✅ Size validation
+- ✅ Download attachments
+- ✅ View attachment metadata
+
+### 📊 Statistics & Analytics
+- ✅ Total email count
+- ✅ Unread/read breakdown
+- ✅ Sent/received statistics
+- ✅ Storage usage tracking
+
+---
+
+## 🛠️ Technology Stack
+
+| Component | Technology |
+|-----------|------------|
+| **Language** | Java 17+ |
+| **GUI Framework** | JavaFX 21+ |
+| **Database** | MySQL 8.0+ |
+| **JDBC Driver** | MySQL Connector/J 8.0.33 |
+| **IDE** | IntelliJ IDEA Community Edition |
+| **Architecture** | Three-tier (Presentation, Business, Data) |
+
+---
+
+## 🏗️ Architecture
+
+┌─────────────────────────────────────┐
+│     PRESENTATION LAYER              │
+│  (JavaFX GUI - MainGUI.java)        │
+└───────────┬─────────────────────────┘
+│
+┌───────────▼─────────────────────────┐
+│     BUSINESS LOGIC LAYER            │
+│  (Services - UserService,           │
+│   EmailService, FolderService,      │
+│   AttachmentService)                │
+└───────────┬─────────────────────────┘
+│
+┌───────────▼─────────────────────────┐
+│     DATA ACCESS LAYER               │
+│  (DatabaseHelper + MySQL Database)  │
+└─────────────────────────────────────┘
+
+
+### Key Design Patterns
+- **MVC Pattern**: Separation of concerns
+- **DAO Pattern**: Database abstraction
+- **Singleton Pattern**: DatabaseHelper
+- **Factory Pattern**: Entity creation
+
+---
+
+## 👥 Team Contributions
+
+### Project Leader (40%) - [Your Name]
+- System architecture design
+- Main GUI development (`MainGUI.java`)
+- Database connection layer (`DatabaseHelper.java`)
+- Project integration and testing
+- Technical leadership and coordination
+
+### Database Architect (20%)
+- Database schema design
+- SQL optimization and indexing
+- Trigger and view creation
+- Sample data generation
+
+### Backend Developer (15%)
+- Email service implementation
+- Folder service implementation
+- Complex SQL query optimization
+
+### Authentication Developer (15%)
+- User service implementation
+- Entity class development
+- Input validation logic
+
+### Documentation Specialist (10%)
+- Complete project documentation
+- Setup guides and tutorials
+- Code comments and API documentation
+
+---
+
+## 📦 Installation
+
+### Prerequisites
+- **JDK 17+** ([Download](https://www.oracle.com/java/technologies/downloads/))
+- **MySQL 8.0+** ([Download](https://dev.mysql.com/downloads/mysql/))
+- **JavaFX SDK 21+** ([Download](https://openjfx.io/))
+- **IntelliJ IDEA** ([Download](https://www.jetbrains.com/idea/download/))
+- **MySQL Connector/J 8.0.33** ([Download](https://dev.mysql.com/downloads/connector/j/))
+
+### Quick Setup
+1. **Clone/Download the project**
+````bash
+   git clone <repository-url>
+   cd EmailClientProject
+````
+
+2. **Configure MySQL**
+   - Start MySQL server
+   - Create database (auto-created by application)
+   - Update credentials in `DatabaseHelper.java` if needed
+
+3. **Configure IntelliJ IDEA**
+   - Open project in IntelliJ
+   - Add JavaFX SDK to libraries
+   - Add MySQL Connector JAR to libraries
+   - Set VM options (see SETUP_GUIDE.md)
+
+4. **Run the Application**
+   - Run `MainGUI.java` for GUI version
+   - Run `Main.java` for console version
+
+**For detailed step-by-step instructions, see [SETUP_GUIDE.md](docs/SETUP_GUIDE.md)**
+
+---
+
+## 💻 Usage
+
+### First Time Setup
+1. Launch the application
+2. Click **Sign Up** tab
+3. Create a new account:
+   - Username: `john_doe` (3+ characters)
+   - Password: `pass123` (4+ characters)
+4. Login with your credentials
+
+### Using Test Data
+Sample users are pre-loaded:
+- `john_doe` / `pass123`
+- `alice_smith` / `pass456`
+- `bob_wilson` / `pass789`
+- `sarah_jones` / `pass321`
+- `mike_brown` / `pass654`
+
+### Sending an Email
+1. Click **Compose** button
+2. Enter recipient username
+3. Fill in subject and body
+4. Select priority (optional)
+5. Add attachments (optional)
+6. Click **OK** to send
+
+### Managing Folders
+1. View folders in left panel
+2. Right-click for folder operations
+3. Drag emails to move between folders
+
+---
+
+## 📸 Screenshots
+
+### Login Screen
+**Description**: Modern gradient background with card-based login/signup interface.
+
+[Screenshot Placeholder: 01_login_screen.png]
+
+### Main Application
+**Description**: Three-panel layout with folders, email list, and content preview.
+[Screenshot Placeholder: 02_main_interface.png]
+
+### Compose Email Dialog
+**Description**: Clean interface for composing emails with attachment support.
+[Screenshot Placeholder: 03_compose_email.png]
+
+### Email Statistics
+**Description**: Dashboard showing email analytics and usage statistics.
+[Screenshot Placeholder: 04_statistics.png]
+
+---
+
+## 🗄️ Database Schema
+
+### Entity Relationship Diagram
+User (1) ─────< (N) Folder
+│
+│
+└─────< (N) EmailUser (N) >───── (1) Email
+│                    │
+│                    │
+└─────< (N) Attachment
+
+### Tables
+- **User**: User accounts and profiles
+- **Email**: Email messages
+- **Folder**: Email folders (system and custom)
+- **EmailUser**: Junction table for email-user relationships
+- **Attachment**: File attachments metadata
+- **WebsiteSignUp**: External website registrations
+
+---
+
+## 🔧 Troubleshooting
+
+### Database Connection Issues
+Error: Could not connect to MySQL server
+Solution:
+
+Verify MySQL is running
+Check credentials in DatabaseHelper.java
+Ensure database exists (auto-created on first run)
+
+
+### JavaFX Module Issues
+Error: JavaFX runtime components are missing
+Solution:
+
+Add VM options: --module-path "path/to/javafx-sdk/lib" --add-modules javafx.controls,javafx.fxml
+Verify JavaFX SDK is properly configured
+
+
+### Attachment Errors
+Error: Failed to save attachment
+Solution:
+
+Ensure 'attachments' directory exists
+Check file permissions
+Verify file size (<25MB)
+
+
+**For more solutions, see [SETUP_GUIDE.md](docs/SETUP_GUIDE.md)**
+
+---
+
+## 🚀 Future Enhancements
+
+- [ ] Multiple recipients (CC/BCC support)
+- [ ] Email threading/conversations
+- [ ] Draft email functionality
+- [ ] Email templates
+- [ ] Advanced search filters
+- [ ] Email scheduling
+- [ ] Dark mode theme
+- [ ] Email encryption
+- [ ] Mobile responsive design
+- [ ] Cloud synchronization
+
+---
+
+## 📄 License
+
+This project is created for **academic purposes** as part of a Database Management System course.
+
+**Security Note**: This project uses plain text password storage for educational purposes. In production environments, always implement proper password hashing (BCrypt, Argon2, etc.).
+
+---
+
+## 📞 Contact
+
+For questions, issues, or contributions:
+- **Project Repository**: [GitHub Link]
+- **Documentation**: See `docs/` folder
+- **API Reference**: See `API_DOCUMENTATION.md`
+
+---
+
+**Built with ❤️ by Group 9 | © 2025**
