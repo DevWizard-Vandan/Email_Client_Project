@@ -418,6 +418,25 @@ public class ConceptDemonstration {
                 System.out.println("  • Sent emails: " + rs.getInt("Sent"));
                 System.out.println("  • Avg length: " + rs.getInt("AvgLength") + " chars");
             }
+            // Optional: show some actual joined records
+            try (ResultSet rs2 = stmt.executeQuery(
+                "SELECT e.Subject, sender.Name as Sender, receiver.Name as Receiver " +
+                "FROM Email e " +
+                "INNER JOIN EmailUser eu_s ON e.EmailID = eu_s.EmailID AND eu_s.Role = 'Sender' " +
+                "INNER JOIN User sender ON eu_s.UserID = sender.UserID " +
+                "LEFT JOIN EmailUser eu_r ON e.EmailID = eu_r.EmailID AND eu_r.Role = 'Receiver' " +
+                "LEFT JOIN User receiver ON eu_r.UserID = receiver.UserID " +
+                "LIMIT 3")) {
+                int count = 0;
+                while (rs2.next() && count < 3) {
+                    System.out.println("  • " + rs2.getString("Subject") + 
+                        " (From: " + rs2.getString("Sender") + 
+                        " To: " + rs2.getString("Receiver") + ")");
+                    count++;
+                }
+            } catch (SQLException e2) {
+                System.out.println("  (No row details for joined records)");
+            }
         } catch (SQLException e) {
             System.out.println("  (No data available for demo)");
         }
@@ -521,31 +540,29 @@ public class ConceptDemonstration {
             System.out.println("  (Functions not available - run advanced_features.sql first)");
         }
     }
-}
 
-                 "SELECT e.Subject, sender.Name as Sender, receiver.Name as Receiver " +
-                 "FROM Email e " +
-                 "INNER JOIN EmailUser eu_s ON e.EmailID = eu_s.EmailID AND eu_s.Role = 'Sender' " +
-                 "INNER JOIN User sender ON eu_s.UserID = sender.UserID " +
-                 "LEFT JOIN EmailUser eu_r ON e.EmailID = eu_r.EmailID AND eu_r.Role = 'Receiver' " +
-                 "LEFT JOIN User receiver ON eu_r.UserID = receiver.UserID " +
-                 "LIMIT 3")) {
-            
-            int count = 0;
-            while (rs.next() && count < 3) {
-                System.out.println("  • " + rs.getString("Subject") + 
-                                 " (From: " + rs.getString("Sender") + 
-                                 " To: " + rs.getString("Receiver") + ")");
-                count++;
-            }
-        } catch (SQLException e) {
-            System.out.println("  (No data available for demo)");
-        }
-    }
-    
     /**
      * Demonstrate AGGREGATE functions
      */
     private static void demonstrateAggregates(Connection conn) {
         try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(
+                "SELECT COUNT(*) AS EmailCount, " +
+                "SUM(AttachmentSize) AS TotalAttachmentSize, " +
+                "AVG(LENGTH(Body)) AS AvgEmailLength, " +
+                "MAX(SentTimestamp) AS MaxTimestamp, " +
+                "MIN(SentTimestamp) AS MinTimestamp " +
+                "FROM Email LEFT JOIN Attachment ON Email.EmailID = Attachment.EmailID")) {
+            
+            if (rs.next()) {
+                System.out.println("  • Email count: " + rs.getInt("EmailCount"));
+                System.out.println("  • Total attachment size: " + rs.getLong("TotalAttachmentSize") + " bytes");
+                System.out.println("  • Average email length: " + rs.getInt("AvgEmailLength") + " chars");
+                System.out.println("  • Newest email timestamp: " + rs.getTimestamp("MaxTimestamp"));
+                System.out.println("  • Oldest email timestamp: " + rs.getTimestamp("MinTimestamp"));
+            }
+        } catch (SQLException e) {
+            System.out.println("  (No data available for demo)");
+        }
+    }
+}
