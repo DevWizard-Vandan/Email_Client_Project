@@ -1,121 +1,240 @@
-public class UserService {
+package services;
 
+import entities.User;
+import java.sql.*;
+
+/**
+ * UserService - User Management Service
+ * 
+ * Handles user authentication, registration, and profile management.
+ * Provides input validation and session management.
+ * 
+ * @version 1.0
+ * @since 2025-01-09
+ */
+public class UserService {
+    
+    private DatabaseHelper dbHelper;
+    
+    public UserService(DatabaseHelper dbHelper) {
+        this.dbHelper = dbHelper;
+    }
+    
     /**
-     * Handle user signup
-     * @param user User object with signup details
-     * @return true if signup successful, false otherwise
+     * User signup with validation
      */
     public boolean signup(User user) {
-        // Check if user already exists
-        User existingUser = DatabaseHelper.getUserByName(user.getName());
-        if (existingUser != null) {
-            System.out.println("Username already exists!");
-            return false;
-        }
-
         // Validate input
         if (!isValidInput(user)) {
+            System.err.println("Invalid user input for signup");
             return false;
         }
-
-        // Insert user into database
-        boolean success = DatabaseHelper.insertUser(user);
-        if (success) {
-            System.out.println("User registered successfully!");
-        } else {
-            System.out.println("Registration failed!");
+        
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        
+        try {
+            conn = dbHelper.getConnection();
+            
+            // Check if username already exists
+            if (getUserByUsername(user.getName()) != null) {
+                System.err.println("Username already exists: " + user.getName());
+                return false;
+            }
+            
+            String sql = "INSERT INTO User (Name, Password, PersonalDetails) VALUES (?, ?, ?)";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, user.getName());
+            pstmt.setString(2, user.getPassword());
+            pstmt.setString(3, user.getPersonalDetails());
+            
+            int rows = pstmt.executeUpdate();
+            
+            if (rows > 0) {
+                System.out.println("User registered successfully: " + user.getName());
+                return true;
+            }
+            
+            return false;
+            
+        } catch (SQLException e) {
+            System.err.println("Signup error: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } finally {
+            dbHelper.closeStatement(pstmt);
+            dbHelper.closeConnection(conn);
         }
-
-        return success;
     }
-
+    
     /**
-     * Handle user login
-     * @param username Username entered by user
-     * @param password Password entered by user
-     * @return User object if login successful, null otherwise
+     * User login with credential verification
      */
     public User login(String username, String password) {
-        // Validate input
-        if (username == null || username.trim().isEmpty()) {
-            System.out.println("Username cannot be empty!");
+        if (username == null || username.trim().isEmpty() || 
+            password == null || password.isEmpty()) {
             return null;
         }
-
-        if (password == null || password.trim().isEmpty()) {
-            System.out.println("Password cannot be empty!");
+        
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = dbHelper.getConnection();
+            String sql = "SELECT * FROM User WHERE Name = ? AND Password = ? AND IsActive = TRUE";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, username.trim());
+            pstmt.setString(2, password);
+            
+            rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("UserID"));
+                user.setName(rs.getString("Name"));
+                user.setPassword(rs.getString("Password"));
+                user.setPersonalDetails(rs.getString("PersonalDetails"));
+                user.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                user.setLastLogin(rs.getTimestamp("LastLogin"));
+                user.setActive(rs.getBoolean("IsActive"));
+                
+                System.out.println("Login successful for user: " + username);
+                return user;
+            }
+            
+            System.out.println("Login failed for user: " + username);
             return null;
+            
+        } catch (SQLException e) {
+            System.err.println("Login error: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        } finally {
+            dbHelper.closeResultSet(rs);
+            dbHelper.closeStatement(pstmt);
+            dbHelper.closeConnection(conn);
         }
-
-        // Validate credentials against database
-        User user = DatabaseHelper.validateUser(username.trim(), password);
-
+    }
+    
+    /**
+     * Logout user
+     */
+    public void logout(User user) {
         if (user != null) {
-            System.out.println("Login successful! Welcome, " + user.getName());
-        } else {
-            System.out.println("Invalid username or password!");
+            System.out.println("User logged out: " + user.getName());
         }
-
-        return user;
     }
-
+    
     /**
-     * Validate user input for signup
-     * @param user User object to validate
-     * @return true if valid, false otherwise
+     * Update last login timestamp
      */
-    private boolean isValidInput(User user) {
-        // Check username
-        if (user.getName() == null || user.getName().trim().isEmpty()) {
-            System.out.println("Username cannot be empty!");
+    public boolean updateLastLogin(int userId) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        
+        try {
+            conn = dbHelper.getConnection();
+            String sql = "UPDATE User SET LastLogin = CURRENT_TIMESTAMP WHERE UserID = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, userId);
+            
+            int rows = pstmt.executeUpdate();
+            return rows > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("Error updating last login: " + e.getMessage());
             return false;
+        } finally {
+            dbHelper.closeStatement(pstmt);
+            dbHelper.closeConnection(conn);
         }
-
-        if (user.getName().length() < 3) {
-            System.out.println("Username must be at least 3 characters long!");
-            return false;
-        }
-
-        // Check email
-        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
-            System.out.println("Email cannot be empty!");
-            return false;
-        }
-
-        if (!isValidEmail(user.getEmail())) {
-            System.out.println("Please enter a valid email address!");
-            return false;
-        }
-
-        // Check password
-        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
-            System.out.println("Password cannot be empty!");
-            return false;
-        }
-
-        if (user.getPassword().length() < 4) {
-            System.out.println("Password must be at least 4 characters long!");
-            return false;
-        }
-
-        return true;
     }
-
+    
     /**
-     * Simple email validation
-     * @param email Email to validate
-     * @return true if email format is valid, false otherwise
-     */
-    private boolean isValidEmail(String email) {
-        return email.contains("@") && email.contains(".");
-    }
-
-    /**
-     * Get user by username (utility method)
-     * @param username Username to search for
-     * @return User object if found, null otherwise
+     * Get user by username
      */
     public User getUserByUsername(String username) {
-        return DatabaseHelper.getUserByName(username);
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = dbHelper.getConnection();
+            String sql = "SELECT * FROM User WHERE Name = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, username);
+            
+            rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("UserID"));
+                user.setName(rs.getString("Name"));
+                user.setPassword(rs.getString("Password"));
+                user.setPersonalDetails(rs.getString("PersonalDetails"));
+                user.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                user.setLastLogin(rs.getTimestamp("LastLogin"));
+                user.setActive(rs.getBoolean("IsActive"));
+                return user;
+            }
+            
+            return null;
+            
+        } catch (SQLException e) {
+            System.err.println("Error getting user: " + e.getMessage());
+            return null;
+        } finally {
+            dbHelper.closeResultSet(rs);
+            dbHelper.closeStatement(pstmt);
+            dbHelper.closeConnection(conn);
+        }
+    }
+    
+    /**
+     * Validate user input
+     */
+    public boolean isValidInput(User user) {
+        if (user == null) {
+            return false;
+        }
+        
+        // Username validation (3+ characters)
+        if (user.getName() == null || user.getName().trim().length() < 3) {
+            return false;
+        }
+        
+        // Password validation (4+ characters)
+        if (user.getPassword() == null || user.getPassword().length() < 4) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Update user profile
+     */
+    public boolean updateProfile(User user) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        
+        try {
+            conn = dbHelper.getConnection();
+            String sql = "UPDATE User SET PersonalDetails = ? WHERE UserID = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, user.getPersonalDetails());
+            pstmt.setInt(2, user.getUserId());
+            
+            int rows = pstmt.executeUpdate();
+            return rows > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("Error updating profile: " + e.getMessage());
+            return false;
+        } finally {
+            dbHelper.closeStatement(pstmt);
+            dbHelper.closeConnection(conn);
+        }
     }
 }
