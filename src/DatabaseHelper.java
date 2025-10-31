@@ -9,7 +9,7 @@ public class DatabaseHelper {
     // Get database connection
     public static Connection getConnection() throws SQLException {
         try {
-            // Load MySQL JDBC driver
+            // Load MySQL JDBC driver (not required in modern JDBC, but kept for legacy)
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             throw new SQLException("MySQL JDBC Driver not found. Make sure mysql-connector-j.jar is in classpath", e);
@@ -19,8 +19,14 @@ public class DatabaseHelper {
 
     // Initialize database with tables
     public static void initializeDatabase() {
-        try (Connection conn = getConnection()) {
+        // First, try to create database itself using a system-level connection
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/", DB_USER, DB_PASSWORD)) {
             createDatabase(conn);
+        } catch (SQLException e) {
+            System.err.println("Error creating database: " + e.getMessage());
+        }
+        // Now, connect to email_client and create tables
+        try (Connection conn = getConnection()) {
             createTables(conn);
             System.out.println("Database initialized successfully!");
         } catch (SQLException e) {
@@ -166,7 +172,9 @@ public class DatabaseHelper {
         String insertSenderSQL = "INSERT INTO EmailUser (EmailID, UserID, Role) VALUES (?, ?, 'Sender')";
         String insertReceiverSQL = "INSERT INTO EmailUser (EmailID, UserID, Role) VALUES (?, ?, 'Receiver')";
 
-        try (Connection conn = getConnection()) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
             conn.setAutoCommit(false); // Start transaction
 
             // Insert email
@@ -211,12 +219,19 @@ public class DatabaseHelper {
 
         } catch (SQLException e) {
             System.err.println("Error inserting email: " + e.getMessage());
-            try (Connection conn = getConnection()) {
-                conn.rollback();
+            try {
+                if (conn != null) conn.rollback();
             } catch (SQLException rollbackEx) {
                 System.err.println("Error during rollback: " + rollbackEx.getMessage());
             }
             return false;
+        } finally {
+            try {
+                if (conn != null) conn.setAutoCommit(true);
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                // Ignore
+            }
         }
     }
 }
