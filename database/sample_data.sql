@@ -1,83 +1,34 @@
--- Sample Data for Email Client Database
--- Safe to re-run due to INSERT IGNORE
--- This file inserts sample users, emails, relationships, attachments, folders, and signups.
-
 USE email_client;
 
--- Insert Sample Users (Consider hashing passwords in production)
-INSERT IGNORE INTO User (Name, Email, Password) VALUES
-('Vandan_Sharma', 'vandan@gmail.com', 'vandan2006'),
-('Shashwat_Upadhyay', 'shashwat@gmail.com', 'shashwat2025'),
-('Aksh_Upase', 'aksh@gmail.com', 'aksh25'),
-('Prathamesh_Upase', 'prathamesh@gmail.com', 'prathamesh06'),
-('Om_Tundurwar', 'om@gmail.com', 'om123');
+-- ========== INSERT SAMPLE USERS ==========
+INSERT INTO User (Name, Password, PersonalDetails) VALUES
+('john_doe', 'pass123', 'Software Engineer, johndoe@email.com, +1-555-0101'),
+('alice_smith', 'pass456', 'Project Manager, alice.smith@email.com, +1-555-0102'),
+('bob_wilson', 'pass789', 'Designer, bob.wilson@email.com, +1-555-0103'),
+('sarah_jones', 'pass321', 'Marketing Specialist, sarah.j@email.com, +1-555-0104'),
+('mike_brown', 'pass654', 'Data Analyst, mike.brown@email.com, +1-555-0105');
 
--- Insert Sample Emails
-INSERT IGNORE INTO Email (EmailID, Subject, Body, Timestamp) VALUES
-(1, 'Welcome to the Team!', 'Hi there! Welcome to our amazing team. We are excited to have you on board.', '2024-01-15 09:30:00'),
-(2, 'Project Update', 'The project is progressing well. We should be ready for the next phase by Friday.', '2024-01-16 14:20:00'),
-(3, 'Meeting Reminder', 'Don\'t forget about our team meeting tomorrow at 2 PM in the conference room.', '2024-01-17 10:45:00'),
-(4, 'Lunch Plans', 'Would you like to grab lunch together today? I know a great new restaurant nearby.', '2024-01-18 11:15:00'),
-(5, 'Report Submission', 'Please find the attached monthly report. Let me know if you have any questions.', '2024-01-19 16:30:00'),
-(6, 'Thank You!', 'Thank you for your help with the project. Your contribution was invaluable.', '2024-01-20 08:00:00'),
-(7, 'Weekend Plans', 'Any plans for the weekend? Would love to catch up if you\'re free.', '2024-01-21 17:45:00');
+-- Note: Default folders are automatically created by trigger
 
--- Insert Sample EmailUser relationships
--- Updated comments & ensured no duplicate receivers
--- Email 1: Vandan -> Shashwat
-INSERT IGNORE INTO EmailUser (EmailID, UserID, Role) VALUES
-(1, 1, 'Sender'),
-(1, 2, 'Receiver');
+-- ========== INSERT SAMPLE CUSTOM FOLDERS ==========
+INSERT INTO Folder (UserID, Name, IsSystem, Color) VALUES
+(1, 'Work', FALSE, '#2980b9'),
+(1, 'Personal', FALSE, '#16a085'),
+(2, 'Projects', FALSE, '#8e44ad'),
+(3, 'Clients', FALSE, '#c0392b');
 
--- Email 2: Shashwat -> Aksh
-INSERT IGNORE INTO EmailUser (EmailID, UserID, Role) VALUES
-(2, 2, 'Sender'),
-(2, 3, 'Receiver');
+-- ========== INSERT SAMPLE EMAILS ==========
 
--- Email 3: Prathamesh -> Vandan
-INSERT IGNORE INTO EmailUser (EmailID, UserID, Role) VALUES
-(3, 4, 'Sender'),
-(3, 1, 'Receiver');
+-- Email 1: Alice to John (High Priority, Unread)
+INSERT INTO Email (Subject, Body, Priority, Timestamp) VALUES
+('Q4 Project Kickoff Meeting', 
+'Hi John,\n\nI hope this email finds you well. I wanted to schedule a kickoff meeting for our Q4 project. The meeting will cover project scope, timeline, and resource allocation.\n\nProposed time: Next Monday, 10 AM\nLocation: Conference Room A\n\nPlease confirm your availability.\n\nBest regards,\nAlice',
+'High',
+DATE_SUB(NOW(), INTERVAL 2 DAY));
 
--- Email 4: Aksh -> Vandan
-INSERT IGNORE INTO EmailUser (EmailID, UserID, Role) VALUES
-(4, 3, 'Sender'),
-(4, 1, 'Receiver');
+SET @email1_id = LAST_INSERT_ID();
+INSERT INTO EmailUser (EmailID, UserID, Role, FolderID, IsRead) VALUES
+(@email1_id, 2, 'Sender', (SELECT FolderID FROM Folder WHERE UserID=2 AND Name='Sent'), TRUE),
+(@email1_id, 1,# 🚀 Professional Email Client - Complete Project Files
 
--- Email 5: Om -> Prathamesh
-INSERT IGNORE INTO EmailUser (EmailID, UserID, Role) VALUES
-(5, 5, 'Sender'),
-(5, 4, 'Receiver');
-
--- Email 6: Vandan -> Shashwat
-INSERT IGNORE INTO EmailUser (EmailID, UserID, Role) VALUES
-(6, 1, 'Sender'),
-(6, 2, 'Receiver');
-
--- Email 7: Shashwat -> Aksh
-INSERT IGNORE INTO EmailUser (EmailID, UserID, Role) VALUES
-(7, 2, 'Sender'),
-(7, 3, 'Receiver');
-
--- Insert Sample Attachments
-INSERT IGNORE INTO Attachments (EmailID, FilePath) VALUES
-(5, '/attachments/report.pdf'),
-(6, '/attachments/thankyou.png');
-
--- Insert Sample Folders
-INSERT IGNORE INTO Folder (Name, UserID) VALUES
-('Inbox', 1),
-('Sent', 1),
-('Drafts', 2),
-('Inbox', 2),
-('Inbox', 3),
-('Inbox', 4),
-('Inbox', 5);
-
--- Insert Sample Website SignUps
-INSERT IGNORE INTO WebsiteSignUp (Name, DomainName, UserID) VALUES
-('Gmail Signup', 'gmail.com', 1),
-('Gmail Signup', 'gmail.com', 2),
-('Gmail Signup', 'gmail.com', 3),
-('Yahoo Signup', 'yahoo.com', 4),
-('Outlook Signup', 'outlook.com', 5);
+This document contains all remaining project files for immediate copy-paste implementation.
