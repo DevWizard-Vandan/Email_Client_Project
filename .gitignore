@@ -1,23 +1,20 @@
-# ---- Java build files ----
+````gitignore
+# Compiled class files
 *.class
-*.jar
-*.war
-*.ear
+out/
+target/
+build/
 
-# ---- IDE specific ----
 # IntelliJ IDEA
 .idea/
 *.iml
-out/
+*.iws
+*.ipr
 
 # Eclipse
-.project
 .classpath
+.project
 .settings/
-bin/
-
-# VS Code
-.vscode/
 
 # NetBeans
 nbproject/private/
@@ -25,12 +22,37 @@ build/
 nbbuild/
 dist/
 nbdist/
-nbactions.xml
-nb-configuration.xml
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Database
+*.sql.backup
+*.db
+
+# Attachments (uploaded files)
+attachments/user_*/
+!attachments/README.txt
 
 # Logs
 *.log
 
-# Windows
-Thumbs.db
-e
+# Configuration (with sensitive data)
+database.properties
+config.properties
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+````
+
+---
