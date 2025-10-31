@@ -406,6 +406,123 @@ public class ConceptDemonstration {
     private static void demonstrateJoins(Connection conn) {
         try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(
+                 "SELECT COUNT(*) as Total, " +
+                 "SUM(CASE WHEN eu.Role='Sender' THEN 1 ELSE 0 END) as Sent, " +
+                 "AVG(LENGTH(e.Body)) as AvgLength " +
+                 "FROM Email e " +
+                 "JOIN EmailUser eu ON e.EmailID = eu.EmailID " +
+                 "WHERE eu.IsDeleted = FALSE")) {
+            
+            if (rs.next()) {
+                System.out.println("  • Total emails: " + rs.getInt("Total"));
+                System.out.println("  • Sent emails: " + rs.getInt("Sent"));
+                System.out.println("  • Avg length: " + rs.getInt("AvgLength") + " chars");
+            }
+        } catch (SQLException e) {
+            System.out.println("  (No data available for demo)");
+        }
+    }
+    
+    /**
+     * Demonstrate GROUP BY / HAVING
+     */
+    private static void demonstrateGroupBy(Connection conn) {
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(
+                 "SELECT e.Priority, COUNT(*) as Count " +
+                 "FROM Email e " +
+                 "JOIN EmailUser eu ON e.EmailID = eu.EmailID " +
+                 "WHERE eu.IsDeleted = FALSE " +
+                 "GROUP BY e.Priority " +
+                 "HAVING COUNT(*) > 0")) {
+            
+            while (rs.next()) {
+                System.out.println("  • " + rs.getString("Priority") + 
+                                 " priority: " + rs.getInt("Count") + " emails");
+            }
+        } catch (SQLException e) {
+            System.out.println("  (No data available for demo)");
+        }
+    }
+    
+    /**
+     * Demonstrate SUBQUERIES
+     */
+    private static void demonstrateSubqueries(Connection conn) {
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(
+                 "SELECT Name, " +
+                 "(SELECT COUNT(*) FROM EmailUser WHERE UserID = u.UserID AND IsDeleted = FALSE) as EmailCount " +
+                 "FROM User u " +
+                 "LIMIT 3")) {
+            
+            while (rs.next()) {
+                System.out.println("  • " + rs.getString("Name") + 
+                                 ": " + rs.getInt("EmailCount") + " emails");
+            }
+        } catch (SQLException e) {
+            System.out.println("  (No data available for demo)");
+        }
+    }
+    
+    /**
+     * Demonstrate VIEWS
+     */
+    private static void demonstrateViews(Connection conn) {
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(
+                 "SELECT * FROM UserDashboard LIMIT 3")) {
+            
+            while (rs.next()) {
+                System.out.println("  • " + rs.getString("Name") + 
+                                 " - Total: " + rs.getInt("TotalEmails") +
+                                 ", Unread: " + rs.getInt("UnreadEmails"));
+            }
+        } catch (SQLException e) {
+            System.out.println("  (View not available - run advanced_features.sql first)");
+        }
+    }
+    
+    /**
+     * Demonstrate STORED PROCEDURES
+     */
+    private static void demonstrateStoredProcedure(Connection conn) {
+        try (CallableStatement cstmt = conn.prepareCall("{CALL GetUserEmailCount(?, ?, ?, ?)}")) {
+            cstmt.setInt(1, 1);
+            cstmt.registerOutParameter(2, java.sql.Types.INTEGER);
+            cstmt.registerOutParameter(3, java.sql.Types.INTEGER);
+            cstmt.registerOutParameter(4, java.sql.Types.INTEGER);
+            cstmt.execute();
+            
+            System.out.println("  • Total: " + cstmt.getInt(2));
+            System.out.println("  • Unread: " + cstmt.getInt(3));
+            System.out.println("  • Sent: " + cstmt.getInt(4));
+        } catch (SQLException e) {
+            System.out.println("  (Procedure not available - run advanced_features.sql first)");
+        }
+    }
+    
+    /**
+     * Demonstrate FUNCTIONS
+     */
+    private static void demonstrateFunctions(Connection conn) {
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(
+                 "SELECT CalculateStorageUsed(1) as Storage, " +
+                 "GetUnreadCount(1) as Unread")) {
+            
+            if (rs.next()) {
+                long storage = rs.getLong("Storage");
+                int unread = rs.getInt("Unread");
+                System.out.println("  • Storage: " + FileSizeFormatter.format(storage));
+                System.out.println("  • Unread: " + unread);
+            }
+        } catch (SQLException e) {
+            System.out.println("  (Functions not available - run advanced_features.sql first)");
+        }
+    }
+}
+
                  "SELECT e.Subject, sender.Name as Sender, receiver.Name as Receiver " +
                  "FROM Email e " +
                  "INNER JOIN EmailUser eu_s ON e.EmailID = eu_s.EmailID AND eu_s.Role = 'Sender' " +
