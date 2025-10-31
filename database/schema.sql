@@ -1,5 +1,4 @@
-### 📄 `schema.sql`
-````sql
+
 CREATE DATABASE IF NOT EXISTS email_client;
 USE email_client;
 
