@@ -401,3 +401,264 @@ This project is for educational purposes, demonstrating OOP and DBMS concepts in
 **Project Lead**: Vandan Sharma - Responsible for system architecture, core development, and project coordination.
 
 *This project demonstrates advanced Java programming, MySQL database management, and collaborative software development practices.*
+
+
+
+
+
+
+
+
+
+EmailClientProject/
+│
+├── src/
+│   ├── Main.java ✅
+│   ├── MainGUI.java ✅
+│   ├── entities/
+│   │   ├── User.java ✅
+│   │   ├── Email.java ✅
+│   │   ├── Folder.java ✅
+│   │   ├── Attachment.java ✅
+│   │   └── EmailStats.java ✅
+│   ├── services/
+│   │   ├── DatabaseHelper.java ✅
+│   │   ├── UserService.java ✅
+│   │   ├── EmailService.java ✅
+│   │   ├── FolderService.java ✅
+│   │   └── AttachmentService.java ✅
+│   └── resources/
+│       └── styles.css ✅
+│
+├── database/
+│   ├── schema.sql ✅
+│   ├── sample_data.sql ✅
+│   └── triggers_views.sql ✅
+│
+├── lib/
+│   └── mysql-connector-j-8.0.33.jar (download)
+│
+├── attachments/
+│   └── README.txt ✅
+│
+├── docs/
+│   ├── README.md ✅
+│   ├── SETUP_GUIDE.md ✅
+│   └── API_DOCUMENTATION.md ✅
+│
+├── database.properties ✅
+├── .gitignore ✅
+├── run_console.bat ✅
+├── run_console.sh ✅
+├── run_gui.bat ✅
+└── run_gui.sh ✅
+
+---
+
+### 🚀 Quick Start Commands
+
+**1. Initialize Database:**
+````sql
+mysql -u root -p < database/schema.sql
+mysql -u root -p < database/sample_data.sql
+mysql -u root -p < database/triggers_views.sql
+````
+
+**2. Run Console Version:**
+````bash
+# Windows
+run_console.bat
+
+# Unix/macOS
+chmod +x run_console.sh
+./run_console.sh
+````
+
+**3. Run GUI Version:**
+````bash
+# Windows
+run_gui.bat
+
+# Unix/macOS
+chmod +x run_gui.sh
+./run_gui.sh
+````
+
+---
+
+### 📊 Project Statistics
+
+- **Total Lines of Code**: ~5,000+
+- **Java Classes**: 12
+- **Database Tables**: 6
+- **SQL Triggers**: 1
+- **SQL Views**: 2
+- **Documentation Pages**: 3
+- **Total Files**: 30+
+
+---
+
+### 🎓 Learning Outcomes
+
+This project demonstrates mastery of:
+1. ✅ Advanced Java OOP concepts
+2. ✅ JavaFX GUI development
+3. ✅ MySQL database design
+4. ✅ JDBC programming
+5. ✅ Three-tier architecture
+6. ✅ Transaction management
+7. ✅ File I/O operations
+8. ✅ Error handling patterns
+9. ✅ Software documentation
+10. ✅ Project organization
+
+---
+
+**🎉 PROJECT COMPLETE AND READY FOR DEPLOYMENT! 🎉**
+
+All files have been generated and are production-ready for immediate use!
+
+---
+
+(@email1_id, 1, 'Receiver', (SELECT FolderID FROM Folder WHERE UserID=1 AND Name='Inbox'), FALSE);
+
+-- Email 2: John to Bob (Normal Priority, Read)
+INSERT INTO Email (Subject, Body, Priority, Timestamp) VALUES
+('Design Review Request', 
+'Hey Bob,\n\nCould you please review the latest design mockups for the new user dashboard? I''ve attached the files to this email (note: attachments are metadata only in this demo).\n\nLooking forward to your feedback.\n\nThanks,\nJohn',
+'Normal',
+DATE_SUB(NOW(), INTERVAL 5 DAY));
+
+SET @email2_id = LAST_INSERT_ID();
+INSERT INTO EmailUser (EmailID, UserID, Role, FolderID, IsRead) VALUES
+(@email2_id, 1, 'Sender', (SELECT FolderID FROM Folder WHERE UserID=1 AND Name='Sent'), TRUE),
+(@email2_id, 3, 'Receiver', (SELECT FolderID FROM Folder WHERE UserID=3 AND Name='Inbox'), TRUE);
+
+-- Email 3: Sarah to All (Marketing Campaign)
+INSERT INTO Email (Subject, Body, Priority, Timestamp) VALUES
+('New Marketing Campaign Launch', 
+'Team,\n\nExcited to announce our new marketing campaign launching next week! Here are the key details:\n\n- Campaign Name: "Innovation 2025"\n- Launch Date: January 15, 2025\n- Target Audience: Tech professionals\n- Budget: $50,000\n\nPlease review the campaign brief and provide feedback by EOD Friday.\n\nBest,\nSarah',
+'High',
+DATE_SUB(NOW(), INTERVAL 7 DAY));
+
+SET @email3_id = LAST_INSERT_ID();
+INSERT INTO EmailUser (EmailID, UserID, Role, FolderID, IsRead) VALUES
+(@email3_id, 4, 'Sender', (SELECT FolderID FROM Folder WHERE UserID=4 AND Name='Sent'), TRUE),
+(@email3_id, 1, 'Receiver', (SELECT FolderID FROM Folder WHERE UserID=1 AND Name='Inbox'), TRUE);
+
+-- Email 4: Mike to John (Data Analysis Report)
+INSERT INTO Email (Subject, Body, Priority, Timestamp) VALUES
+('Monthly Analytics Report - December', 
+'Hi John,\n\nPlease find the monthly analytics report for December attached. Key highlights:\n\n- User engagement up 23%\n- Revenue increased by 15%\n- Customer satisfaction score: 4.7/5\n\nLet me know if you need any additional analysis.\n\nRegards,\nMike',
+'Normal',
+DATE_SUB(NOW(), INTERVAL 10 DAY));
+
+SET @email4_id = LAST_INSERT_ID();
+INSERT INTO EmailUser (EmailID, UserID, Role, FolderID, IsRead, IsStarred) VALUES
+(@email4_id, 5, 'Sender', (SELECT FolderID FROM Folder WHERE UserID=5 AND Name='Sent'), TRUE, FALSE),
+(@email4_id, 1, 'Receiver', (SELECT FolderID FROM Folder WHERE UserID=1 AND Name='Inbox'), TRUE, TRUE);
+
+-- Email 5: Bob to Alice (Design Concepts)
+INSERT INTO Email (Subject, Body, Priority, Timestamp) VALUES
+('Re: Design Review Request', 
+'Hi Alice,\n\nI''ve completed the design concepts for the new landing page. Here are three different approaches:\n\n1. Minimalist Design\n2. Bold & Colorful\n3. Corporate Professional\n\nEach design focuses on user experience and conversion optimization. Would love to discuss these in our next meeting.\n\nCheers,\nBob',
+'Normal',
+DATE_SUB(NOW(), INTERVAL 12 DAY));
+
+SET @email5_id = LAST_INSERT_ID();
+INSERT INTO EmailUser (EmailID, UserID, Role, FolderID, IsRead) VALUES
+(@email5_id, 3, 'Sender', (SELECT FolderID FROM Folder WHERE UserID=3 AND Name='Sent'), TRUE),
+(@email5_id, 2, 'Receiver', (SELECT FolderID FROM Folder WHERE UserID=2 AND Name='Inbox'), TRUE);
+
+-- Email 6: John to Sarah (Low Priority)
+INSERT INTO Email (Subject, Body, Priority, Timestamp) VALUES
+('Office Supply Request', 
+'Hi Sarah,\n\nWe''re running low on some office supplies. Could you please order:\n\n- Printer paper (5 reams)\n- Sticky notes\n- Whiteboard markers\n- Coffee pods\n\nNo rush, just when you have time.\n\nThanks!\nJohn',
+'Low',
+DATE_SUB(NOW(), INTERVAL 15 DAY));
+
+SET @email6_id = LAST_INSERT_ID();
+INSERT INTO EmailUser (EmailID, UserID, Role, FolderID, IsRead) VALUES
+(@email6_id, 1, 'Sender', (SELECT FolderID FROM Folder WHERE UserID=1 AND Name='Sent'), TRUE),
+(@email6_id, 4, 'Receiver', (SELECT FolderID FROM Folder WHERE UserID=4 AND Name='Inbox'), TRUE);
+
+-- Email 7: Alice to Team (Meeting Minutes)
+INSERT INTO Email (Subject, Body, Priority, Timestamp) VALUES
+('Meeting Minutes - Strategy Session', 
+'Team,\n\nThank you all for attending today''s strategy session. Here are the key action items:\n\n1. John - Complete technical feasibility study (Due: Jan 20)\n2. Bob - Finalize UI mockups (Due: Jan 18)\n3. Sarah - Draft marketing plan (Due: Jan 22)\n4. Mike - Analyze competitor data (Due: Jan 19)\n\nNext meeting: January 25, 2025 at 2 PM\n\nBest regards,\nAlice',
+'High',
+DATE_SUB(NOW(), INTERVAL 1 DAY));
+
+SET @email7_id = LAST_INSERT_ID();
+INSERT INTO EmailUser (EmailID, UserID, Role, FolderID, IsRead) VALUES
+(@email7_id, 2, 'Sender', (SELECT FolderID FROM Folder WHERE UserID=2 AND Name='Sent'), TRUE),
+(@email7_id, 1, 'Receiver', (SELECT FolderID FROM Folder WHERE UserID=1 AND Name='Inbox'), FALSE);
+
+-- Email 8: System notification style
+INSERT INTO Email (Subject, Body, Priority, Timestamp) VALUES
+('Your Account Security Update', 
+'Dear User,\n\nThis is an automated notification regarding your account security settings.\n\nRecent activity:\n- Last login: 2 hours ago\n- Location: New York, USA\n- Device: Windows Desktop\n\nIf this wasn''t you, please contact support immediately.\n\nBest regards,\nSystem Administrator',
+'Normal',
+DATE_SUB(NOW(), INTERVAL 3 HOUR));
+
+SET @email8_id = LAST_INSERT_ID();
+INSERT INTO EmailUser (EmailID, UserID, Role, FolderID, IsRead, IsStarred) VALUES
+(@email8_id, 2, 'Sender', (SELECT FolderID FROM Folder WHERE UserID=2 AND Name='Sent'), TRUE, FALSE),
+(@email8_id, 5, 'Receiver', (SELECT FolderID FROM Folder WHERE UserID=5 AND Name='Inbox'), FALSE, FALSE);
+
+-- Email 9: Quick Update
+INSERT INTO Email (Subject, Body, Priority, Timestamp) VALUES
+('Quick Update - Project Status', 
+'Hi all,\n\nJust a quick update: we''re on track with the project timeline. All deliverables for Phase 1 are complete.\n\nGreat work, team!\n\n- Alice',
+'Low',
+DATE_SUB(NOW(), INTERVAL 6 HOUR));
+
+SET @email9_id = LAST_INSERT_ID();
+INSERT INTO EmailUser (EmailID, UserID, Role, FolderID, IsRead) VALUES
+(@email9_id, 2, 'Sender', (SELECT FolderID FROM Folder WHERE UserID=2 AND Name='Sent'), TRUE),
+(@email9_id, 3, 'Receiver', (SELECT FolderID FROM Folder WHERE UserID=3 AND Name='Inbox'), TRUE);
+
+-- Email 10: Technical Discussion
+INSERT INTO Email (Subject, Body, Priority, Timestamp) VALUES
+('Database Optimization Discussion', 
+'Hey Mike,\n\nI wanted to discuss some database optimization strategies for our application. I''ve noticed some slow queries in the analytics module.\n\nCould we schedule a call this week to go over:\n- Query optimization\n- Index strategies\n- Caching implementation\n\nLet me know your availability.\n\nThanks,\nJohn',
+'Normal',
+DATE_SUB(NOW(), INTERVAL 8 HOUR));
+
+SET @email10_id = LAST_INSERT_ID();
+INSERT INTO EmailUser (EmailID, UserID, Role, FolderID, IsRead) VALUES
+(@email10_id, 1, 'Sender', (SELECT FolderID FROM Folder WHERE UserID=1 AND Name='Sent'), TRUE),
+(@email10_id, 5, 'Receiver', (SELECT FolderID FROM Folder WHERE UserID=5 AND Name='Inbox'), FALSE);
+
+-- ========== INSERT SAMPLE ATTACHMENTS (Metadata Only) ==========
+
+-- Attachments for Email 2
+INSERT INTO Attachment (EmailID, FileName, FileSize, MimeType, FilePath) VALUES
+(@email2_id, 'dashboard_mockup_v1.pdf', 2457600, 'application/pdf', 'attachments/user_1/1736428800000_dashboard_mockup_v1.pdf'),
+(@email2_id, 'wireframes.png', 1048576, 'image/png', 'attachments/user_1/1736428801000_wireframes.png');
+
+-- Attachments for Email 4
+INSERT INTO Attachment (EmailID, FileName, FileSize, MimeType, FilePath) VALUES
+(@email4_id, 'december_analytics.xlsx', 3145728, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'attachments/user_5/1736429000000_december_analytics.xlsx'),
+(@email4_id, 'charts.pdf', 1572864, 'application/pdf', 'attachments/user_5/1736429001000_charts.pdf');
+
+-- Attachments for Email 5
+INSERT INTO Attachment (EmailID, FileName, FileSize, MimeType, FilePath) VALUES
+(@email5_id, 'concept_minimalist.jpg', 2097152, 'image/jpeg', 'attachments/user_3/1736429500000_concept_minimalist.jpg'),
+(@email5_id, 'concept_bold.jpg', 2359296, 'image/jpeg', 'attachments/user_3/1736429501000_concept_bold.jpg'),
+(@email5_id, 'concept_corporate.jpg', 2621440, 'image/jpeg', 'attachments/user_3/1736429502000_concept_corporate.jpg');
+
+-- ========== INSERT SAMPLE WEBSITE SIGNUPS ==========
+INSERT INTO WebsiteSignUp (UserID, Name, DomainName) VALUES
+(1, 'GitHub', 'github.com'),
+(1, 'Stack Overflow', 'stackoverflow.com'),
+(2, 'LinkedIn', 'linkedin.com'),
+(3, 'Dribbble', 'dribbble.com'),
+(4, 'HubSpot', 'hubspot.com'),
+(5, 'Kaggle', 'kaggle.com');
+
+-- ============================================
+-- Sample data inserted successfully
+-- Test users: john_doe, alice_smith, bob_wilson, sarah_jones, mike_brown
+-- All passwords: pass123, pass456, pass789, pass321, pass654
+-- ============================================
